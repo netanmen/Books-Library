@@ -134,7 +134,7 @@ class App extends Component {
 					updatedErrors.author = '';
 						break;
 					case 'publishedDate':
-					const pattern = /^([0-9]{4})[./-]([0][1-9]|[1][0-2])[/-]([0][1-9]|[1|2][0-9]|[3][0|1])$/;
+					const pattern = /^([0][1-9]|[1|2][0-9]|[3][0|1])[./-]([0][1-9]|[1][0-2])[/-]([0][1-9]|[1|2][0-9]|[3][0|1])([0-9]{4})$/;
 					const isDateNotValid = pattern.test(bookToValidate.publishedDate);
 					updatedErrors.publishedDate = isDateNotValid ? 'Must enter a valid date in the following pattern YY-MM-DDDD' : '';
 						break;
