@@ -162,7 +162,8 @@ class App extends Component {
 	}
 
 	toProperTitle = (title) => {
-			let properTitle = title;
+			let properTitle = title
+			try	{
 			const pattern = /[^a-zA-Z ]/g;
 
 			properTitle = properTitle.trim();
@@ -170,7 +171,12 @@ class App extends Component {
 			properTitle = properTitle.toLowerCase().split(' ')
 				.map(word => word.replace(word[0], word[0].toUpperCase()))
 				.join(' ');
+			} catch(error) {
+				console.log('toProperTitle-catch-error', 
+					'An error has occured in toProperTitle function, check if input title contains more than one space between words');
+			} finally {
 			return properTitle;
+			}
 	}
 
 	render() {
