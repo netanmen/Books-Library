@@ -7,7 +7,6 @@ const BookList = ({ books, handleEdit, handleDelete, toggleModal }) => {
 			{books.map(book => 
 				<Book key={book.id} 
 					id={book.id} 
-					thumbnail={book.thumbnail} 
 					title={book.title}
 					author={book.author} 
 					publishedDate={book.publishedDate}

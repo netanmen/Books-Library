@@ -1,0 +1,13 @@
+.font-custom {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+.btn-custom {
+	width: 3.2rem;
+	text-align: center;
+	font-size: 65%;
+}
+
+#btn-edit{
+	margin-right: .35rem;
+}

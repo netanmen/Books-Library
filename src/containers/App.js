@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import BookList from './BookList';
-import ModalComponent from './ModalComponent';
+import BookList from '../components/BookList';
+import ModalComponent from '../components/ModalComponent';
+import './App.css';
 
 class App extends Component {
 	constructor(props) {
@@ -57,7 +58,7 @@ class App extends Component {
 
 	toggleModal = (e) => {
 		const showModal = this.state.showModal;
-		this.setState({ showModal: !showModal });
+		this.setState({ showModal: !showModal, errors: {title: '', author: '', publishedDate: ''}});
 	}
 
 	handleChange = (e) => {
@@ -79,81 +80,97 @@ class App extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 
-		const inputObj = {
+		const bookToValidate = {
 			title: this.state.title, 
 			author: this.state.author, 
 			publishedDate: this.state.publishedDate
 		};
-		if (this.validateForm(inputObj) === true) {
+		const isBookValidated = this.validateForm(bookToValidate);
+		if (isBookValidated) {
 			let updatedBooks = this.state.books;
 
 			if (this.state.id !== '') {
-				const indexOfEditBook = this.state.books.findIndex(book => book.id === this.state.id);
-				updatedBooks[indexOfEditBook].title = this.state.title;
-				updatedBooks[indexOfEditBook].author = this.state.author;
-				updatedBooks[indexOfEditBook].publishedDate = this.state.publishedDate;
+				const indexOfBookToEdit = this.state.books.findIndex(book => book.id === this.state.id);
+				updatedBooks[indexOfBookToEdit].title = this.toProperTitle(this.state.title);
+				updatedBooks[indexOfBookToEdit].author = this.state.author;
+				updatedBooks[indexOfBookToEdit].publishedDate = this.state.publishedDate;
 			} else {
-				const newId = Math.floor(Math.random() * 100000).toString();
+				const IdOfNewBook = Math.floor(Math.random() * 100000).toString();
 				const newBook = {
-					id: newId, 
-					title: this.state.title,
+					id: IdOfNewBook, 
+					title: this.toProperTitle(this.state.title),
 					author: this.state.author,
 					publishedDate: this.state.publishedDate
 				};
 				updatedBooks.unshift(newBook);
 			}
-			this.toggleModal();			
+
 			this.setState({ 
 				books: updatedBooks,
 				id: '', 
 				title: '', 
 				author: '', 
-				publishedDate: '', 
-				errors: {title: '', author: '', publishedDate: ''} 
+				publishedDate: ''
 			});
+			this.toggleModal();			
 		}
 	}
 
-	validateForm = (inputObj) => {
+	validateForm = (bookToValidate) => {
 		const updatedErrors = this.state.errors;
+		let isFormValid;
 
-		console.log('inputObj', inputObj);
+		Object.keys(bookToValidate).forEach(elementKey => {
+			const isBookElementHasValue = bookToValidate[elementKey].length;
 
-		Object.keys(inputObj).forEach(key => {
-			if (!inputObj[key].length) {
-				switch(key) {
+			if (isBookElementHasValue) {
+				switch(elementKey) {
 					case 'title':
-					updatedErrors.title = 'Title can not be empty.';
-					break;
-					case 'author':
-					updatedErrors.author = 'Author can not be empty.';
-					break;
-					case 'publishedDate':
-					updatedErrors.publishedDate = 'Please enter valid date.';
-					break;
-					default:
-					break;
-				}
-			} else if (inputObj[key].length) {
-				switch(key) {
-					case 'title':
-					updatedErrors.title = '';
-					break;
+					const isTitleExists = this.state.books.some(book => book.title === bookToValidate.title);
+
+					updatedErrors.title = isTitleExists ? 'Title already exists. Please pick a different name.' : '';
+						break;
 					case 'author':
 					updatedErrors.author = '';
-					break;
+						break;
 					case 'publishedDate':
 					updatedErrors.publishedDate = '';
-					break;
+						break;
 					default:
-					break;
+						break;
+				}
+			} else {
+				switch(elementKey) {
+					case 'title':
+					updatedErrors.title = 'Title can not be empty.';
+						break;
+					case 'author':
+					updatedErrors.author = 'Author can not be empty.';
+						break;
+					case 'publishedDate':
+					updatedErrors.publishedDate = 'Please enter valid date.';
+						break;
+					default:
+						break;
 				}
 			}
 		});
 
-		const isFormValid = Object.keys(updatedErrors).every(key => updatedErrors[key] === "");
+		isFormValid = Object.keys(updatedErrors).every(errorKey => updatedErrors[errorKey] === "");
 		this.setState({ errors: updatedErrors, isFormValid: isFormValid });
 		return isFormValid;
+	}
+
+	toProperTitle = (title) => {
+			let properTitle = title;
+			const pattern = /[^a-zA-Z ]/g;
+
+			properTitle = properTitle.trim();
+			properTitle = properTitle.replace(pattern, '');
+			properTitle = properTitle.toLowerCase().split(' ')
+				.map(word => word.replace(word[0], word[0].toUpperCase()))
+				.join(' ');
+			return properTitle;
 	}
 
 	render() {
@@ -161,12 +178,12 @@ class App extends Component {
 
 		return !books.length ? 
 			(
-				<div className='d-flex flex-column'>
-					<h1 className='display-3 text-center m-2'>
-						No books yet...
-					</h1>
-					<h6 className='text-center m-3'>Or... you just deleted all your books. Go ahead and add your first book now.</h6>
-					<button type="button" className="btn btn-primary border-dark align-self-center text-center" onClick={this.handleAdd}>
+				<div className='d-flex flex-column justify-content-center'>
+					<h1 className='display-3 align-self-center m-3 font-custom'>No books yet...</h1>
+					<h6 className='align-self-center m-3 font-custom'>
+						Or... you just deleted all your books. Go ahead and add your first book now.
+					</h6>
+					<button type="button" className="btn btn-primary border-dark align-self-center m-3" onClick={this.handleAdd}>
 						Add new book
 					</button>
 					<ModalComponent 
@@ -177,8 +194,11 @@ class App extends Component {
 				</div>
 			) :
 			(
-				<div className='d-flex flex-column'>
-					<h1 className='display-3 text-center m-2'>Fully Booked</h1>	
+				<div className='d-flex flex-column justify-content-center'>
+					<h1 className='display-3 align-self-center m-3 font-custom'>Fully Booked!</h1>	
+					<h6 className='align-self-center m-3 font-custom'>
+						The application to manage your book collection.
+					</h6>
 					<button type="button" className="btn btn-primary border-dark align-self-center m-3" onClick={this.handleAdd}>
 						Add new book
 					</button>
@@ -191,21 +211,10 @@ class App extends Component {
 						errors={errors} handleChange={this.handleChange} handleSubmit={this.handleSubmit} 
 						toggleModal={this.toggleModal} showModal={showModal}
 					/>
+
 				</div>
 			);
 	}
 }
 
 export default App;
-
-// TODO: 1. Add hover transition to Cards? looks good/slow..
-//		 2. Add filter to titles => titleCase and remove non-english characters. FIRST
-//		 3. Add validition => validate that submitted title doesn't exist in bookList. SECOND
-//		 4. Use Redux. THIRD
-//		 5. Find nice fonts (and maybe other colors as well).
-//		 6. Change buttons' text to icons (edit/delete/add...)
-//		 7. Change the newBook in state from seperate variables into object. FIFTH
-//		 7. Organize project files in folders. FOURTH
-//		 7. Put project on GitHub and gh-pages. MUST!!! When I finish everything!
-//		 8. Code review?
-//		 9. Modify render with tenary operator just for BoxList component.
