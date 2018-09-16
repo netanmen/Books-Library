@@ -71,6 +71,7 @@ class App extends Component {
 				break;
 			case 'publishedDate':
 			this.setState({ publishedDate: e.target.value });
+			console.log('publishedDate', e.target.value);
 				break;
 			default:
 				break;
@@ -127,14 +128,15 @@ class App extends Component {
 				switch(elementKey) {
 					case 'title':
 					const isTitleExists = this.state.books.some(book => book.title === bookToValidate.title);
-
 					updatedErrors.title = isTitleExists ? 'Title already exists. Please pick a different name.' : '';
 						break;
 					case 'author':
 					updatedErrors.author = '';
 						break;
 					case 'publishedDate':
-					updatedErrors.publishedDate = '';
+					const pattern = /^([0-9]{4})[./-]([0][1-9]|[1][0-2])[/-]([0][1-9]|[1|2][0-9]|[3][0|1])$/;
+					const isDateNotValid = pattern.test(bookToValidate.publishedDate);
+					updatedErrors.publishedDate = isDateNotValid ? 'Must enter a valid date in the following pattern YY-MM-DDDD' : '';
 						break;
 					default:
 						break;
@@ -148,7 +150,7 @@ class App extends Component {
 					updatedErrors.author = 'Author can not be empty.';
 						break;
 					case 'publishedDate':
-					updatedErrors.publishedDate = 'Please enter valid date.';
+					updatedErrors.publishedDate = 'Published date can not be empty.';
 						break;
 					default:
 						break;
