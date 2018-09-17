@@ -71,7 +71,6 @@ class App extends Component {
 				break;
 			case 'publishedDate':
 			this.setState({ publishedDate: e.target.value });
-			console.log('publishedDate', e.target.value);
 				break;
 			default:
 				break;
@@ -135,7 +134,6 @@ class App extends Component {
 						break;
 					case 'publishedDate':
 					const pattern = /^([0][1-9]|[1|2][0-9]|[3][0|1])[./-]([0][1-9]|[1][0-2])[./-]([0-9]{4})$/;
-					console.log('bookToValidate.publishedDate', bookToValidate.publishedDate); //
 					const isDateNotValid = pattern.test(bookToValidate.publishedDate);
 					updatedErrors.publishedDate = isDateNotValid ? 'Must enter a valid date in the following pattern YY-MM-DDDD' : '';
 						break;
