@@ -68,9 +68,6 @@ class App extends Component {
 	}
 
 	toggleModal = (e) => {
-		console.log('toggleModal-id', this.state.id);//
-		console.log('toggleModal-modalType', this.state.modalType);//
-
 		const showModal = this.state.showModal;
 		this.setState({ showModal: !showModal, errors: {title: '', author: '', publishedDate: ''}});
 	}
