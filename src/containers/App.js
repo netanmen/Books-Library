@@ -14,7 +14,8 @@ class App extends Component {
 			publishedDate: '',
 
 			errors: {title: '', author: '', publishedDate: ''},
-			showModal: false
+			showModal: false,
+			modalType: ''
 		};
 	}
 
@@ -40,23 +41,36 @@ class App extends Component {
 		});
 	}
 
+	handleDelete = (e) => {
+		this.setState({ id: e.target.value, modalType: 'delete' });
+		this.toggleModal();			
+	}
+
+	handleConfirmDelete = (e) => {
+		const idToDelete = this.state.id;		
+		const updatedBooks = this.state.books.filter(book => book.id !== idToDelete);
+		this.setState({ books: updatedBooks });
+		this.toggleModal();			
+	}
+
 	handleEdit = (e) => {
 		const editBook = this.state.books.filter(book => book.id === e.target.value)[0];
-		this.setState({ id: editBook.id, title: editBook.title, author: editBook.author, publishedDate: editBook.publishedDate });
+		this.setState({ 
+			id: editBook.id, title: editBook.title, author: editBook.author, publishedDate: editBook.publishedDate, 
+			modalType: 'addOrEdit' 
+		});
 		this.toggleModal();
 	}
 
 	handleAdd = (e) => {
-		this.setState({ id: '', title: '', author: '', publishedDate: '' });
+		this.setState({ id: '', title: '', author: '', publishedDate: '', modalType: 'addOrEdit' });
 		this.toggleModal();
 	}
 
-	handleDelete = (e) => {
-		const updatedBooks = this.state.books.filter(book => book.id !== e.target.value);
-		this.setState({ books: updatedBooks });
-	}
-
 	toggleModal = (e) => {
+		console.log('toggleModal-id', this.state.id);//
+		console.log('toggleModal-modalType', this.state.modalType);//
+
 		const showModal = this.state.showModal;
 		this.setState({ showModal: !showModal, errors: {title: '', author: '', publishedDate: ''}});
 	}
@@ -181,46 +195,38 @@ class App extends Component {
 	}
 
 	render() {
-		const { books, title, author, publishedDate, errors, showModal } = this.state;
+		const { books, title, author, publishedDate, errors, showModal, modalType } = this.state;
 
-		return !books.length ? 
-			(
-				<div className='d-flex flex-column justify-content-center'>
-					<h1 className='display-3 align-self-center m-3 font-custom'>No books yet...</h1>
-					<h6 className='align-self-center m-3 font-custom'>
-						Or... you just deleted all your books. Go ahead and add your first book now.
-					</h6>
-					<button type="button" className="btn btn-primary border-dark align-self-center m-3" onClick={this.handleAdd}>
-						Add new book
-					</button>
-					<ModalComponent 
-						title={title} author={author} publishedDate={publishedDate} 
-						errors={errors} handleChange={this.handleChange} handleSubmit={this.handleSubmit} 
-						toggleModal={this.toggleModal} showModal={showModal}
-					/>
-				</div>
-			) :
-			(
-				<div className='d-flex flex-column justify-content-center'>
-					<h1 className='display-3 align-self-center m-3 font-custom'>Fully Booked!</h1>	
-					<h6 className='align-self-center m-3 font-custom'>
-						The application to manage your book collection.
-					</h6>
-					<button type="button" className="btn btn-primary border-dark align-self-center m-3" onClick={this.handleAdd}>
-						Add new book
-					</button>
-					<BookList 
-						books={books} handleEdit={this.handleEdit} 
-						handleDelete={this.handleDelete} toggleModal={this.toggleModal}
-					/>
-					<ModalComponent 
-						title={title} author={author} publishedDate={publishedDate} 
-						errors={errors} handleChange={this.handleChange} handleSubmit={this.handleSubmit} 
-						toggleModal={this.toggleModal} showModal={showModal}
-					/>
-
-				</div>
-			);
+		return(
+			<div className='d-flex flex-column justify-content-center'>
+				<h1 className='display-3 align-self-center m-3 font-custom'>
+					{books.length ? 'Fully Booked!' : 'No books yet...'}
+				</h1>
+				<h6 className='align-self-center m-3 font-custom'>
+					{books.length ? 
+						'The application to manage your book collection.' : 
+						'Or... you just deleted all your books. Go ahead and add your first book now.'
+					}
+				</h6>
+				<button type="button" className="btn btn-primary border-dark align-self-center m-3" onClick={this.handleAdd}>
+					Add new book
+				</button>
+				{
+					books.length ?
+						(
+							<BookList books={books} handleEdit={this.handleEdit} 
+								handleDelete={this.handleDelete} toggleModal={this.toggleModal}
+							/>
+						) :
+						null
+				}
+				<ModalComponent 
+					title={title} author={author} publishedDate={publishedDate} errors={errors} 
+					handleChange={this.handleChange} handleSubmit={this.handleSubmit} handleConfirmDelete={this.handleConfirmDelete}
+					toggleModal={this.toggleModal} showModal={showModal} modalType={modalType}
+				/>
+			</div>
+		);
 	}
 }
 
