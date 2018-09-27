@@ -92,6 +92,7 @@ class App extends Component {
 		e.preventDefault();
 
 		const bookToValidate = {
+			id: this.state.id,
 			title: this.state.title, 
 			author: this.state.author, 
 			publishedDate: this.state.publishedDate
@@ -137,16 +138,22 @@ class App extends Component {
 			if (isBookElementHasValue) {
 				switch(elementKey) {
 					case 'title':
-					const isTitleExists = this.state.books.some(book => book.title === bookToValidate.title);
-					updatedErrors.title = isTitleExists ? 'Title already exists. Please pick a different name.' : '';
+							const editBookBeforeChanges = (bookToValidate.id === '') ? null : this.state.books.filter(book => book.id === bookToValidate.id)[0];
+							if (bookToValidate.id === '' 
+								|| editBookBeforeChanges.title !== bookToValidate.title 
+								|| editBookBeforeChanges.author !== bookToValidate.author 
+								|| editBookBeforeChanges.publishedDate !== bookToValidate.publishedDate) {
+									const isTitleExists = this.state.books.some(book => book.title === bookToValidate.title);
+									updatedErrors.title = isTitleExists ? 'Title already exists. Please pick a different name.' : '';
+							}
 						break;
 					case 'author':
-					updatedErrors.author = '';
+						updatedErrors.author = '';
 						break;
 					case 'publishedDate':
-					const pattern = /^([0][1-9]|[1|2][0-9]|[3][0|1])[./-]([0][1-9]|[1][0-2])[./-]([0-9]{4})$/;
-					const isDateNotValid = pattern.test(bookToValidate.publishedDate);
-					updatedErrors.publishedDate = isDateNotValid ? 'Must enter a valid date in the following pattern YY-MM-DDDD' : '';
+						const pattern = /^([0][1-9]|[1|2][0-9]|[3][0|1])[./-]([0][1-9]|[1][0-2])[./-]([0-9]{4})$/;
+						const isDateNotValid = pattern.test(bookToValidate.publishedDate);
+						updatedErrors.publishedDate = isDateNotValid ? 'Must enter a valid date in the following pattern YY-MM-DDDD' : '';
 						break;
 					default:
 						break;
@@ -154,13 +161,13 @@ class App extends Component {
 			} else {
 				switch(elementKey) {
 					case 'title':
-					updatedErrors.title = 'Title can not be empty.';
+						updatedErrors.title = 'Title can not be empty.';
 						break;
 					case 'author':
-					updatedErrors.author = 'Author can not be empty.';
+						updatedErrors.author = 'Author can not be empty.';
 						break;
 					case 'publishedDate':
-					updatedErrors.publishedDate = 'Published date can not be empty.';
+						updatedErrors.publishedDate = 'Published date can not be empty.';
 						break;
 					default:
 						break;
